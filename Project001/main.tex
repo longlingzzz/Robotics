@@ -1,0 +1,216 @@
+\documentclass[UTF8,zihao=5,fontset=fandol]{ctexart}
+
+\usepackage[letterpaper,top=1in,bottom=1in,left=1.25in,right=1.25in]{geometry}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+
+\IfFontExistsTF{Times New Roman}
+  {\setmainfont{Times New Roman}}
+  {\setmainfont{TeX Gyre Termes}}
+
+% ============================================================
+% 模板固定文字（课程信息、教师信息、各段标题等）
+% ============================================================
+\input{template-info}
+
+% ============================================================
+% 学生信息填写区
+% 只需修改下面各命令第二对花括号中的内容。
+% ============================================================
+\newcommand{\MajorName}{}              % 专业
+\newcommand{\StudentName}{}            % 姓名
+\newcommand{\StudentID}{}              % 学号
+\newcommand{\ClassName}{}              % 班级
+\newcommand{\ExperimentDate}{年\quad 月\quad 日} % 实验时间
+\newcommand{\SubmissionDate}{年\quad 月\quad 日}         % 实验报告提交时间
+
+% ============================================================
+% 模板排版设置（通常不需要修改）
+% ============================================================
+\pagestyle{empty}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+\setlength{\fboxsep}{5pt}
+\setlength{\fboxrule}{0.4pt}
+\setlist{nosep,leftmargin=2em}
+
+\definecolor{codegray}{RGB}{245,245,245}
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codegray},
+  frame=single,
+  rulecolor=\color{black!30},
+  numbers=left,
+  numberstyle=\tiny\color{black!55},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=4
+}
+
+% 固定宽度的带下划线字段。
+\newcommand{\reportfield}[2]{%
+  \underline{\makebox[#1][c]{\strut #2}}%
+}
+
+% 封面各行左端对齐，下划线右端对齐，内容按整行的中心线对齐。
+\newlength{\coverrowwidth}
+\newlength{\coverlabelwidth}
+\newlength{\coverfieldwidth}
+\setlength{\coverrowwidth}{13.8cm}
+\newcommand{\coverrow}[2]{%
+  \settowidth{\coverlabelwidth}{#1}%
+  \setlength{\coverfieldwidth}{\dimexpr\coverrowwidth-\coverlabelwidth-0.5em\relax}%
+  \makebox[0pt][l]{#1\hspace{0.5em}\reportfield{\coverfieldwidth}{}}%
+  \makebox[\coverrowwidth][c]{\strut #2}%
+}
+
+% 正文页的外框尺寸与原 Word 模板一致。
+\newlength{\reportinnerheight}
+\setlength{\reportinnerheight}{\dimexpr\textheight-2\fboxsep-2\fboxrule\relax}
+\newsavebox{\reportpagebox}
+\newenvironment{reportpage}
+  {\begin{lrbox}{\reportpagebox}\begin{minipage}[t][\reportinnerheight][t]{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}}
+  {\end{minipage}\end{lrbox}\noindent\fbox{\usebox{\reportpagebox}}}
+
+\newcommand{\reportheading}[2]{%
+  \noindent\textbf{#1}%
+  \if\relax\detokenize{#2}\relax\else #2\fi\par
+}
+
+% 正文内容框会根据内容自动增高，并在空间不足时自动分页。
+\newtcolorbox{reportsection}[2]{
+  enhanced jigsaw,
+  breakable,
+  colback=white,
+  colframe=black,
+  boxrule=\fboxrule,
+  arc=0pt,
+  outer arc=0pt,
+  left=5pt,
+  right=5pt,
+  top=5pt,
+  bottom=5pt,
+  before skip=0pt,
+  after skip=0pt,
+  before upper={\reportheading{#1}{#2}}
+}
+
+\begin{document}
+
+% ============================================================
+% 第 1 页：封面
+% ============================================================
+\noindent \AttachmentText
+
+\vspace{2.2em}
+{\centering\bfseries\fontsize{22pt}{28pt}\selectfont \ReportTitle\par}
+
+\vspace{2.8em}
+{\bfseries\fontsize{14pt}{21pt}\selectfont
+\setlength{\parindent}{0pt}
+\centering
+\coverrow{\CourseLabel}{\CourseName}\par\vspace{1.5em}
+\coverrow{\ExperimentLabel}{\ExperimentName}\par\vspace{1.5em}
+\coverrow{\CollegeLabel}{\CollegeName}\par\vspace{1.5em}
+\coverrow{\MajorLabel}{\MajorName}\par\vspace{1.5em}
+\coverrow{\InstructorLabel}{\InstructorName}\par\vspace{1.5em}
+\coverrow{\StudentLabel}{\StudentLine}\par\vspace{1.5em}
+\coverrow{\ClassLabel}{\ClassName}\par\vspace{1.5em}
+\coverrow{\ExperimentDateLabel}{\ExperimentDate}\par\vspace{1.5em}
+\coverrow{\SubmissionDateLabel}{\SubmissionDate}\par
+}
+
+\vfill
+{\centering\bfseries\fontsize{12pt}{16pt}\selectfont \OfficeText\par}
+
+\newpage
+
+% ============================================================
+% 报告正文：各部分按内容自动增高、自动分页
+% ============================================================
+\begin{reportsection}{\PurposeTitle}{}
+  % ---------- “实验目的与要求”填写区开始 ----------
+  跑马灯是嵌入式系统入门实验中常见的人机交互实例。本实验以 STM32F4 开发板为平台，将 LED、独立按键和蜂鸣器等外设组合起来，使学生理解微控制器如何采集外部输入、执行控制逻辑并驱动输出设备，为后续学习中断、定时器及复杂外设控制打下基础。
+
+  \textbf{相关预备知识：}
+  \begin{itemize}
+    \item \textbf{GPIO 基础：}了解 STM32F4 GPIO 的输入、推挽输出、上拉和下拉等工作模式，能够根据开发板原理图确认 LED、按键和蜂鸣器所连接的端口、引脚及有效电平。
+    \item \textbf{LED 驱动：}理解 LED 的限流和高、低电平点亮方式，掌握使用 \texttt{HAL\_GPIO\_WritePin()}、\texttt{HAL\_GPIO\_TogglePin()} 等函数改变 LED 状态。
+    \item \textbf{按键检测：}掌握使用 \texttt{HAL\_GPIO\_ReadPin()} 读取按键电平的方法，理解机械按键抖动的产生原因，以及延时消抖、状态变化检测和单次触发的基本思路。
+    \item \textbf{时序与状态控制：}理解阻塞式延时对程序响应速度的影响，能够使用循环、计时变量或状态机描述跑马灯的执行顺序和灯效切换过程。
+    \item \textbf{蜂鸣器控制：}根据开发板所用蜂鸣器的类型和有效电平选择正确的驱动方式；按键触发后应控制鸣响持续时间，防止蜂鸣器因按键持续按下而连续发声。
+    \item \textbf{PWM 基础：}了解 STM32 定时器、PWM 频率和占空比的含义，理解通过周期性改变占空比调节 LED 平均亮度并形成呼吸效果的原理。
+  \end{itemize}
+
+  \textbf{实验目的：}
+  \begin{enumerate}[label=\arabic*)]
+    \item 熟悉 STM32F4 开发板的基本结构，以及 STM32CubeIDE 中工程创建、引脚配置、代码生成、编译、下载和调试的基本流程。
+    \item 理解 GPIO 输入与输出的工作原理，掌握使用 HAL 库读取按键状态、控制 LED 和驱动蜂鸣器的方法。
+    \item 学习利用循环、延时、位操作及状态变量组织灯光变化，并通过函数封装提高程序的模块化程度和可读性。
+    \item 掌握按键消抖和按键事件检测方法，理解“按下事件”与“持续按下状态”的区别，避免一次按键产生多次误触发。
+    \item 了解定时器 PWM 的频率、占空比与 LED 亮度之间的关系，为实现呼吸灯及后续电机调速等功能建立基础。
+  \end{enumerate}
+
+  \textbf{实验要求：}使用 8 个 LED 实现 4 种具有明显差异的跑马灯特效；使用 4 个按键分别选择对应特效；每次有效按键按下时，蜂鸣器只发出一次提示音，并保证灯效能够稳定切换。程序应合理划分功能模块，使用含义明确的变量和注释，避免各外设控制之间相互干扰。选做部分使用 PWM 占空比渐变实现亮度变化平滑的呼吸灯效果。
+  % ---------- “实验目的与要求”填写区结束 ----------
+\end{reportsection}
+
+\begin{reportsection}{\MethodTitle}{\MethodHint}
+  % ---------- “方法、步骤”填写区开始 ----------
+  % 请在这里填写内容。
+  % ---------- “方法、步骤”填写区结束 ----------
+\end{reportsection}
+
+\begin{reportsection}{\ProcessTitle}{\ProcessHint}
+  % ---------- “实验过程及内容”填写区开始 ----------
+  % 请在这里填写内容。
+  % ---------- “实验过程及内容”填写区结束 ----------
+\end{reportsection}
+
+\begin{reportsection}{\ConclusionTitle}{\ConclusionHint}
+  % ---------- “实验结论”填写区开始 ----------
+  % 请在这里填写内容。
+  % ---------- “实验结论”填写区结束 ----------
+\end{reportsection}
+
+\begin{reportsection}{\ReflectionTitle}{\ReflectionHint}
+  % ---------- “实验体会”填写区开始 ----------
+  % 请在这里填写内容。
+  % ---------- “实验体会”填写区结束 ----------
+
+  \par\medskip\noindent \ReviewNote
+\end{reportsection}
+
+\clearpage
+
+% ============================================================
+% 第 5 页：教师批阅页（学生无需填写）
+% ============================================================
+\begin{reportpage}
+  \begin{minipage}[t][0.56\reportinnerheight][t]{\linewidth}
+    \noindent \ReviewTitle
+  \end{minipage}
+  \par\nointerlineskip\rule{\linewidth}{\fboxrule}\par
+  \begin{minipage}[t][0.15\reportinnerheight][t]{\linewidth}
+    \vspace{5pt}\noindent \GradeTitle
+  \end{minipage}
+  \par\nointerlineskip\rule{\linewidth}{\fboxrule}\par
+  \begin{minipage}[t][0.16\reportinnerheight][t]{\linewidth}
+    \vspace{5pt}
+    \hfill \SignatureTitle\hspace{2em}\par
+    \vspace{1.5em}
+    \hfill 年\hspace{2em}月\hspace{2em}日\hspace{2em}
+  \end{minipage}
+  \par\nointerlineskip\rule{\linewidth}{\fboxrule}\par
+  \vspace{5pt}\noindent \RemarksTitle
+\end{reportpage}
+
+\end{document}
